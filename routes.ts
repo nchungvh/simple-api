@@ -1,43 +1,37 @@
-import {UsersController} from './controllers/users.controller';
-import {UsersMiddleware} from './middlewares/users.middleware';
-
-import express from 'express';
+import { Controller } from "./controllers/controller";
+import { Middleware } from "./middlewares/middleware";
+import express from "express";
 
 export class Routes {
-    app: express.Application;
+  app: express.Application;
 
-    constructor(app: express.Application) {
-        this.app = app;
-        this.configureRoutes();
-    }
+  constructor(app: express.Application) {
+    this.app = app;
+    this.configureRoutes();
+  }
 
-    configureRoutes() {
-        const usersController = new UsersController();
-        const usersMiddleware = UsersMiddleware.getInstance();
-        this.app.get(`/users`, [
-            usersController.listUsers
-        ]);
+  configureRoutes() {
+    const controller = new Controller();
+    const middleware = Middleware.getInstance();
+    this.app.post(`/create`, [
+      middleware.validateRequiredCreateAccount,
+      controller.createAccount,
+    ]);
 
-        this.app.post(`/users`, [
-            usersMiddleware.validateRequiredCreateUserBodyFields,
-            usersMiddleware.validateSameEmailDoesntExist,
-            usersController.createUser
-        ]);
+    this.app.get(`/balance/:id`, [controller.getBalanceByAddress]);
 
-        this.app.put(`/users/:id`, [
-            usersMiddleware.validateUserExists,
-            usersController.put
-        ]);
+    this.app.post(`/transfer`, [
+      middleware.validateRequiredTransfer,
+      controller.transferNativeToken,
+    ]);
 
-        this.app.delete(`/users/:id`, [
-            usersMiddleware.validateUserExists,
-            usersController.removeUser
-        ]);
-        this.app.get(`/users/:id`, [
-            usersMiddleware.validateUserExists,
-            usersController.getUserById
-        ]);
-    }
+    this.app.post(`/fungibletransfer`, [
+      middleware.validateRequiredTransfer,
+      controller.transferFungibleToken,
+    ]);
 
+    this.app.get(`/history/:id`, [controller.getWalletHistoryByAddress]);
 
+    this.app.get(`/hold/:id`, [controller.getTokenHoldByAddress]);
+  }
 }
