@@ -29,8 +29,8 @@ Transfer Fungible Token feature take 3 param:
 - senderId: the Id of sender account
 - receiverId:the Id of receiver account
 - amount: the amount of token that will be transfered
-5. Get account changes history: *http://localhost:3100/history/${id}*
-Get account changes feature take 1 route param: 
+5. Get transaction changes history by accountId: *http://localhost:3100/history/${id}*
+Get transaction changes history by accountId feature take 1 route param: 
 - id: the Id of requested account
 6. Get Token holded in account: *http://localhost:3100/hold/${id}*
 Get Token holded feature take 1 route param: 
