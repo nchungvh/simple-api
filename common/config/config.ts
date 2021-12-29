@@ -4,6 +4,8 @@ import { homedir } from "os";
 
 export const CREDENTIALS_DIR = ".near-credentials";
 
+export const ACCOUNT_HELPER_URL = 'https://near-contract-helper.onrender.com';
+
 export const credentialsPath = path.join(homedir(), CREDENTIALS_DIR);
 
 export const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);

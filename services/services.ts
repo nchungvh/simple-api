@@ -1,4 +1,4 @@
-import { keyStore, Config, devAccount, fail } from "../common/config/config";
+import { keyStore, Config, devAccount, fail, ACCOUNT_HELPER_URL } from "../common/config/config";
 import { NEAR } from "../common/near-api/config-near";
 import { KeyPair, utils, connect } from "near-api-js";
 import * as nearAPI from "near-api-js";
@@ -150,8 +150,15 @@ export class Service {
 
   async getWalletHistoryByAddress(id: any) {
     try {
-      const account = await NEAR.account(id);
-      return await account.getAccountDetails();
+        const txs = await fetch(`${ACCOUNT_HELPER_URL}/account/${id}/activity`).then((res) => res.json());
+    
+        return txs.map((t: any, i: number) => ({
+            ...t,
+            kind: t.action_kind.split('_').map((s: any) => s.substr(0, 1) + s.substr(1).toLowerCase()).join(''),
+            block_timestamp: parseInt(t.block_timestamp.substr(0, 13), 10),
+            hash_with_index: t.action_index + ':' + t.hash,
+            checkStatus: !(i && t.hash === txs[i - 1].hash)
+        }));
     } catch (e) {
       Logger.error(e);
       throw e;
